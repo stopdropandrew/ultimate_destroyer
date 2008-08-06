@@ -1,0 +1,32 @@
+ever tried to destroy/delete tens of millions of rows at once?  w/ rails it sucks, this tries to make it better
+
+class Shredder < ActiveRecord::Base
+  has_many :beers
+end
+
+The default is 500 rows at a time, feel free to change it.
+
+Shredder.destroy_amount = 2000 # woah, easy
+
+
+Now your regular rails destroy methods will only destroy/delete destroy_amount at a time.
+
+Shredder.destroy_all # instantiates x at a time, destroys one a time (no more instantiating the entire table ZOMG)
+
+Shredder.delete_all # just deletes x at a time straight w/ SQL, this way you won't lock up the db with your giant locking query (what a jerk)
+
+
+and in case you use acts_as_paranoid, it works with that too (destroy_all!)
+
+oh yeah, it works with acts_as_paranoid too (destroy_all!)
+
+last thing, it works on associations too, like so:
+
+shredder = Shredder.find(:first)
+shredder.beers.destroy_all # this is what shredders do
+
+
+And it works on your :dependent => :destroy associations too.
+
+
+SHRED!
