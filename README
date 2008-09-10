@@ -18,8 +18,6 @@ Shredder.delete_all # just deletes x at a time straight w/ SQL, this way you won
 
 and in case you use acts_as_paranoid, it works with that too (destroy_all!)
 
-oh yeah, it works with acts_as_paranoid too (destroy_all!)
-
 last thing, it works on associations too, like so:
 
 shredder = Shredder.find(:first)
