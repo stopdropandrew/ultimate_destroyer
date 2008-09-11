@@ -1,3 +1,5 @@
+require 'active_record/connection_adapters/mysql_adapter'
+
 module ActiveRecord
   module ConnectionAdapters
     class AbstractAdapter
@@ -20,18 +22,22 @@ module UltimateDestroyer
       base.extend ClassMethods
       base.class_inheritable_accessor :destroy_amount
       base.destroy_amount = 500
+      
+      class << base
+        alias_method_chain :destroy_all, :limit
+        alias_method_chain :delete_all, :limit
+      end
     end
-  
+    
     module ClassMethods
-      def destroy_all(conditions = nil)
-        return super unless connection.supports_delete_with_limit?
+      def destroy_all_with_limit(conditions = nil)
         until (records = find(:all, :conditions => conditions, :limit => destroy_amount)).blank?
           records.each { |record| record.destroy }
         end
       end
       
-      def delete_all(conditions = nil)
-        return super unless connection.supports_delete_with_limit?
+      def delete_all_with_limit(conditions = nil)
+        return delete_all_without_limit(conditions) unless connection.supports_delete_with_limit?
         
         sql = "DELETE FROM #{quoted_table_name} "
         add_conditions!(sql, conditions, scope(:find))
